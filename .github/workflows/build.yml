@@ -1,25 +1,33 @@
-name: Linting and formatting on PR
+name: Continuous INtegration Check
 on:
   pull_request:
     branches:
       - "**"
 
 jobs:
-  Continuous-Integration:
-    name: Performs linting, formatting on the application
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout the Repository
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup pnpm
-        run: npm install -g pnpm
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
 
-      - name: Install Dependencies
-        run: pnpm install
+      - name: Install dependencies
+        run: npm install
 
-      - name: Run linting check
-        run: pnpm run lint:check
+      - name: Run tests
+        run: npm test
 
-      - name: Check formatting
-        run: pnpm run format:check
+      - name: Build project
+        run: npm run build
+
+      - name: Upload production-ready build
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: build/
